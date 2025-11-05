@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Syllabus AI</title>
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="navbar-container"></div>
+
+    <div class="form-container fade-in-up">
+      <h2 class="text-center mb-4">Welcome Back</h2>
+      <form id="loginForm" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="login-email" class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="login-email" required />
+          <div class="invalid-feedback">Please enter a valid email.</div>
+        </div>
+        <div class="mb-3">
+          <label for="login-password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="login-password"
+            required
+          />
+          <div class="invalid-feedback">Please enter your password.</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+        <p class="text-center text-muted">
+          Don't have an account? <a href="register.html">Register here</a>
+        </p>
+      </form>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - Syllabus AI</title>
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="navbar-container"></div>
+
+    <div class="dashboard-header">
+      <div class="container">
+        <h1>Admin Panel</h1>
+        <p>System overview and statistics</p>
+      </div>
+    </div>
+
+    <div class="container my-5">
+      <div class="row g-4 text-center mb-5">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <h3 id="uploadCount">0</h3>
+            <p class="mb-0">Total Uploads</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <h3 id="usersCount">0</h3>
+            <p class="mb-0">Registered Users</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <h3 id="errorsCount">0</h3>
+            <p class="mb-0">System Errors</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4">
+        <h4 class="mb-4">Recent Activity</h4>
+        <div id="activityLog" class="list-group"></div>
+      </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>
