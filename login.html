@@ -4,13 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Syllabus AI</title>
-
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
     <link href="style.css" rel="stylesheet" />
@@ -18,36 +17,133 @@
   <body>
     <div id="navbar-container"></div>
 
-    <div class="form-container fade-in-up">
-      <h2 class="text-center mb-4">Welcome Back</h2>
-      <form id="loginForm" class="needs-validation" novalidate>
-        <div class="mb-3">
-          <label for="login-email" class="form-label">Email Address</label>
-          <input type="email" class="form-control" id="login-email" required />
-          <div class="invalid-feedback">Please enter a valid email.</div>
+    <div class="auth-container">
+      <div class="card p-4">
+        <div class="text-center mb-4">
+          <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
+          <h2>Welcome Back</h2>
+          <p class="text-muted">Sign in to your Syllabus AI account</p>
         </div>
-        <div class="mb-3">
-          <label for="login-password" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="login-password"
-            required
-          />
-          <div class="invalid-feedback">Please enter your password.</div>
+
+        <!-- Demo Accounts Info -->
+        <div class="alert alert-info">
+          <h6><i class="fas fa-info-circle"></i> Demo Accounts:</h6>
+          <small>
+            Try these pre-configured accounts to explore the platform
+          </small>
         </div>
-        <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
-        <p class="text-center text-muted">
-          Don't have an account? <a href="register.html">Register here</a>
-        </p>
-      </form>
+
+        <form id="loginForm" class="needs-validation" novalidate>
+          <div class="mb-3">
+            <label for="loginEmail" class="form-label">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text"
+                ><i class="fas fa-envelope"></i
+              ></span>
+              <input
+                type="email"
+                class="form-control"
+                id="loginEmail"
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+            <div class="invalid-feedback">Please enter your email address.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="loginPassword" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              <input
+                type="password"
+                class="form-control"
+                id="loginPassword"
+                placeholder="Your password"
+                required
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary toggle-password"
+                data-target="loginPassword"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback">Please enter your password.</div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="rememberMe" />
+              <label class="form-check-label" for="rememberMe"
+                >Remember me</label
+              >
+            </div>
+            <a href="#" class="text-decoration-none small">Forgot password?</a>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary w-100 py-2"
+            id="loginBtn"
+          >
+            <span
+              class="spinner-border spinner-border-sm me-2 d-none"
+              id="loginSpinner"
+            ></span>
+            Sign In
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <p class="mb-0">
+            Don't have an account?
+            <a href="register.html" class="text-decoration-none"
+              >Create Account</a
+            >
+          </p>
+        </div>
+
+        <!-- Demo Quick Login Buttons -->
+        <div class="mt-4 pt-3 border-top">
+          <p class="text-center text-muted small mb-2">Quick Demo Access</p>
+          <div class="d-grid gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-sm demo-login"
+              data-email="student@university.edu"
+              data-password="student123"
+            >
+              <i class="fas fa-user-graduate me-2"></i>Login as Student
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger btn-sm demo-login"
+              data-email="admin@syllabusai.com"
+              data-password="admin123"
+            >
+              <i class="fas fa-cog me-2"></i>Login as Admin
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="footer-container"></div>
+    <!-- Custom Modal -->
+    <div class="custom-modal-overlay" id="customModal">
+      <div class="custom-modal">
+        <span class="custom-modal-close" id="modalClose">&times;</span>
+        <h3 id="modalTitle">Modal Title</h3>
+        <p id="modalContent">Modal content goes here.</p>
+        <button class="btn btn-primary mt-3" id="modalAction">OK</button>
+      </div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/login.js"></script>
   </body>
 </html>

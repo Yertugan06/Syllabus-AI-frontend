@@ -1,133 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Syllabus AI</title>
-
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link href="css/style.css" rel="stylesheet" />
-  </head>
-  <body>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
     <div id="navbar-container"></div>
 
-    <div class="dashboard-header">
-      <div class="container">
-        <h1>Your Study Dashboard</h1>
-        <p>Manage your courses and stay on track</p>
-      </div>
+    <div class="container mt-5 pt-5">
+        <!-- Course Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="card-title course-title">Your Course Dashboard</h2>
+                                <p class="card-text mb-1">
+                                    <strong>Course:</strong> <span class="course-code">Select a syllabus</span>
+                                </p>
+                                <p class="card-text mb-0">
+                                    <strong>Instructor:</strong> <span class="course-instructor">-</span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="bg-white bg-opacity-25 p-3 rounded">
+                                    <h4 class="mb-0" id="totalTopics">0</h4>
+                                    <small>Topics to Study</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mb-4">Study Plan</h2>
+        
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="dashboardSearch" placeholder="Search topics, materials, or deadlines...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="easy">Easy</button>
+                    <button class="filter-btn" data-filter="medium">Medium</button>
+                    <button class="filter-btn" data-filter="hard">Hard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-book fa-2x text-primary mb-2"></i>
+                        <h4 id="totalTopicsCount">0</h4>
+                        <p class="text-muted mb-0">Total Topics</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                        <h4 id="completedTopics">0</h4>
+                        <p class="text-muted mb-0">Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-file-alt fa-2x text-info mb-2"></i>
+                        <h4 id="totalMaterials">0</h4>
+                        <p class="text-muted mb-0">Materials</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-day fa-2x text-warning mb-2"></i>
+                        <h4 id="upcomingDeadlines">0</h4>
+                        <p class="text-muted mb-0">Upcoming</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="dashboardTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#topics">
+                    <i class="fas fa-book me-2"></i> Study Topics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#materials">
+                    <i class="fas fa-file-alt me-2"></i> Learning Materials
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#deadlines">
+                    <i class="fas fa-calendar-alt me-2"></i> Deadlines & Schedule
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <div id="topics" class="tab-pane fade show active">
+                <div id="topicsContainer">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary"></div>
+                        <p class="mt-2">Loading your study topics...</p>
+                    </div>
+                </div>
+            </div>
+            <div id="materials" class="tab-pane fade">
+                <div id="materialsContainer">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary"></div>
+                        <p class="mt-2">Loading learning materials...</p>
+                    </div>
+                </div>
+            </div>
+            <div id="deadlines" class="tab-pane fade">
+                <div id="deadlinesContainer">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary"></div>
+                        <p class="mt-2">Loading deadlines...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Actions</h5>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a href="upload.html" class="btn btn-outline-primary">
+                                <i class="fas fa-upload me-2"></i>Upload New Syllabus
+                            </a>
+                            <button class="btn btn-outline-success" id="exportPlan">
+                                <i class="fas fa-download me-2"></i>Export Study Plan
+                            </button>
+                            <button class="btn btn-outline-info" id="printPlan">
+                                <i class="fas fa-print me-2"></i>Print Schedule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="container mb-5">
-      <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link active"
-            id="topics-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#topics"
-            type="button"
-          >
-            <i class="bi bi-lightbulb"></i> Topics
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            id="materials-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#materials"
-            type="button"
-          >
-            <i class="bi bi-book"></i> Materials
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            id="schedule-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#schedule"
-            type="button"
-          >
-            <i class="bi bi-calendar3"></i> Schedule
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            id="deadlines-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#deadlines"
-            type="button"
-          >
-            <i class="bi bi-alarm"></i> Deadlines
-          </button>
-        </li>
-      </ul>
-
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="topics" role="tabpanel">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Course Topics</h4>
-            <button
-              class="btn btn-sm btn-outline-primary"
-              onclick="loadTopics()"
-            >
-              <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-          <div id="topicsContainer" class="list-group"></div>
+    <!-- Custom Modal -->
+    <div class="custom-modal-overlay" id="customModal">
+        <div class="custom-modal">
+            <span class="custom-modal-close" id="modalClose">&times;</span>
+            <h3 id="modalTitle">Modal Title</h3>
+            <p id="modalContent">Modal content goes here.</p>
+            <button class="btn btn-primary mt-3" id="modalAction">OK</button>
         </div>
-
-        <div class="tab-pane fade" id="materials" role="tabpanel">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Required Materials</h4>
-            <button
-              class="btn btn-sm btn-outline-primary"
-              onclick="loadMaterials()"
-            >
-              <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-          <div id="materialsContainer" class="list-group"></div>
-        </div>
-
-        <div class="tab-pane fade" id="schedule" role="tabpanel">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Class Schedule</h4>
-          </div>
-          <div id="scheduleContainer" class="list-group"></div>
-        </div>
-
-        <div class="tab-pane fade" id="deadlines" role="tabpanel">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Upcoming Deadlines</h4>
-            <button
-              class="btn btn-sm btn-outline-primary"
-              onclick="loadDeadlines()"
-            >
-              <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-          <div id="deadlinesContainer" class="list-group"></div>
-        </div>
-      </div>
     </div>
 
-    <div id="footer-container"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
     <script src="js/dashboard.js"></script>
-  </body>
+</body>
 </html>

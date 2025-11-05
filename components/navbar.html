@@ -1,40 +1,81 @@
-<nav class="navbar navbar-expand-lg navbar-light sticky-top">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">
-      <i class="bi bi-book-half"></i> Syllabus AI
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item" id="nav-login">
-          <a class="nav-link" href="login.html">Login</a>
-        </li>
-        <li class="nav-item" id="nav-register">
-          <a class="nav-link" href="register.html">Register</a>
-        </li>
-        <li class="nav-item d-none" id="nav-upload">
-          <a class="nav-link" href="upload.html">Upload</a>
-        </li>
-        <li class="nav-item d-none" id="nav-dashboard">
-          <a class="nav-link" href="dashboard.html">Dashboard</a>
-        </li>
-        <li class="nav-item d-none" id="nav-profile">
-          <a class="nav-link" href="profile.html">Profile</a>
-        </li>
-        <li class="nav-item d-none" id="nav-admin">
-          <a class="nav-link" href="admin.html">Admin</a>
-        </li>
-        <li class="nav-item d-none" id="nav-logout">
-          <a class="nav-link" href="#" id="logout-btn">Logout</a>
-        </li>
-      </ul>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">
+            <i class="fas fa-graduation-cap me-2"></i>
+            <span class="fw-bold">Syllabus AI</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav ms-auto">
+                <!-- Theme Toggle -->
+                <li class="nav-item">
+                    <a class="nav-link theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </a>
+                </li>
+                
+                <!-- Login/Register Links (shown when not logged in) -->
+                <li class="nav-item" id="navLogin">
+                    <a class="nav-link" href="login.html">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                    </a>
+                </li>
+                <li class="nav-item" id="navRegister">
+                    <a class="nav-link" href="register.html">
+                        <i class="fas fa-user-plus me-1"></i>Register
+                    </a>
+                </li>
+                
+                <!-- User Menu (shown when logged in) -->
+                <li class="nav-item dropdown" id="navUserMenu" style="display: none;">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span id="userDisplayName"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-header text-muted small" id="userEmail"></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="upload.html">
+                                <i class="fas fa-upload me-2"></i>Upload Syllabus
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="dashboard.html">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="profile.html">
+                                <i class="fas fa-user me-2"></i>Profile
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#" id="navLogout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <!-- Admin Link (shown only to admins) -->
+                <li class="nav-item" id="navAdmin" style="display: none;">
+                    <a class="nav-link text-warning" href="admin.html">
+                        <i class="fas fa-cog me-1"></i>Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>

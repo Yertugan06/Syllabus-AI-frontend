@@ -1,64 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Syllabus AI</title>
-
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link href="css/style.css" rel="stylesheet" />
-  </head>
-  <body>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
     <div id="navbar-container"></div>
 
-    <div class="dashboard-header">
-      <div class="container">
-        <h1>Admin Panel</h1>
-        <p>System overview and statistics</p>
-      </div>
+    <div class="container mt-5 pt-5">
+        <h2 class="mb-4">Admin Panel</h2>
+        
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-upload fa-3x mb-3 text-primary"></i>
+                    <div class="stats-number" id="uploadCount">0</div>
+                    <p class="text-muted">Total Uploads</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-users fa-3x mb-3 text-success"></i>
+                    <div class="stats-number" id="usersCount">0</div>
+                    <p class="text-muted">Registered Users</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3 text-danger"></i>
+                    <div class="stats-number" id="errorsCount">0</div>
+                    <p class="text-muted">System Errors</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-chart-line fa-3x mb-3 text-info"></i>
+                    <div class="stats-number" id="activeCount">0</div>
+                    <p class="text-muted">Active Users</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h4>Recent Activity</h4>
+                    <div class="list-group" id="adminActivityLog">
+                        <!-- Activity items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h4>System Status</h4>
+                    <div class="mb-3">
+                        <label>AI Analysis Service</label>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" style="width: 95%">95%</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>File Processing</label>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-info" style="width: 88%">88%</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Database</label>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-warning" style="width: 72%">72%</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>API Response Time</label>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-danger" style="width: 65%">65%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="card mt-4 p-4">
+            <h4>User Management</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                            <th>Uploads</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <div class="container my-5">
-      <div class="row g-4 text-center mb-5">
-        <div class="col-md-4">
-          <div class="stat-card">
-            <h3 id="uploadCount">0</h3>
-            <p class="mb-0">Total Uploads</p>
-          </div>
+    <!-- Custom Modal -->
+    <div class="custom-modal-overlay" id="customModal">
+        <div class="custom-modal">
+            <span class="custom-modal-close" id="modalClose">&times;</span>
+            <h3 id="modalTitle">Modal Title</h3>
+            <p id="modalContent">Modal content goes here.</p>
+            <button class="btn btn-primary mt-3" id="modalAction">OK</button>
         </div>
-        <div class="col-md-4">
-          <div class="stat-card">
-            <h3 id="usersCount">0</h3>
-            <p class="mb-0">Registered Users</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-card">
-            <h3 id="errorsCount">0</h3>
-            <p class="mb-0">System Errors</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card p-4">
-        <h4 class="mb-4">Recent Activity</h4>
-        <div id="activityLog" class="list-group"></div>
-      </div>
     </div>
 
-    <div id="footer-container"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
     <script src="js/admin.js"></script>
-  </body>
+</body>
 </html>

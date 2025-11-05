@@ -1,71 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Syllabus - Syllabus AI</title>
-
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
     <div id="navbar-container"></div>
 
-    <div class="form-container fade-in-up">
-      <h2 class="text-center mb-4">Upload Syllabus</h2>
-      <form id="uploadForm" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label for="syllabusFile" class="form-label">
-            <i class="bi bi-file-pdf"></i> Select Syllabus PDF
-          </label>
-          <input
-            type="file"
-            class="form-control"
-            id="syllabusFile"
-            accept=".pdf"
-            required
-          />
+    <div class="container mt-5 pt-5">
+        <h2 class="text-center mb-4">Upload Your Syllabus</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <form id="uploadForm">
+                        <div class="upload-zone" id="uploadZone">
+                            <i class="fas fa-cloud-upload-alt fa-4x mb-3 text-muted"></i>
+                            <h4>Drag & Drop your PDF here</h4>
+                            <p class="text-muted">or click to browse</p>
+                            <input type="file" id="syllabusFile" accept=".pdf" style="display: none;">
+                        </div>
+                        <div id="fileInfo" class="mt-3 text-center" style="display: none;">
+                            <p><strong>Selected:</strong> <span id="fileName"></span></p>
+                            <p class="text-muted small" id="fileSize"></p>
+                        </div>
+                        <div class="progress mt-4" style="display: none;" id="uploadProgressContainer">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="uploadProgress" style="width: 0%">0%</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3" id="uploadBtn" disabled>
+                            <i class="fas fa-upload"></i> Upload & Analyze
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Upload Tips -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-lightbulb me-2 text-warning"></i>Upload Tips</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check text-success me-2"></i>Only PDF files are supported</li>
+                            <li><i class="fas fa-check text-success me-2"></i>File size should be less than 10MB</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Make sure the syllabus is readable and not scanned</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Include course schedule, topics, and deadlines for best results</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-          <label for="course-name" class="form-label"
-            >Course Name (Optional)</label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="course-name"
-            placeholder="e.g., Computer Science 101"
-          />
-        </div>
-        <div class="progress my-3" style="height: 30px; display: none">
-          <div
-            id="uploadProgress"
-            class="progress-bar progress-bar-striped progress-bar-animated"
-            role="progressbar"
-            style="width: 0%"
-          >
-            0%
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">
-          <i class="bi bi-cloud-upload"></i> Upload & Analyze
-        </button>
-      </form>
     </div>
 
-    <div id="footer-container"></div>
+    <!-- Custom Modal -->
+    <div class="custom-modal-overlay" id="customModal">
+        <div class="custom-modal">
+            <span class="custom-modal-close" id="modalClose">&times;</span>
+            <h3 id="modalTitle">Modal Title</h3>
+            <p id="modalContent">Modal content goes here.</p>
+            <button class="btn btn-primary mt-3" id="modalAction">OK</button>
+        </div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
     <script src="js/upload.js"></script>
-  </body>
+</body>
 </html>

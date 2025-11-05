@@ -1,98 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Syllabus AI - Smart Study Planning</title>
-
-    <!-- Bootstrap 5 CSS -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Bootstrap Icons -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <!-- Custom CSS -->
-    <link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
-    <!-- Navbar -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
     <div id="navbar-container"></div>
 
-    <!-- Landing Page Content -->
-    <section class="hero fade-in-up">
-      <div class="container">
-        <h1>Turn Your Syllabus into a Smart Study Plan</h1>
-        <p>Upload. Extract. Organize. Excel.</p>
-        <a href="register.html" class="btn btn-light btn-lg"
-          >Get Started Free</a
-        >
-      </div>
-    </section>
+    <!-- Home Page -->
+    <div id="homePage" class="page-section active">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container text-center">
+                <h1 class="display-3 fw-bold mb-4">Turn Your Syllabus into a Smart Study Plan</h1>
+                <p class="lead mb-5">Upload. Extract. Organize. Master your courses with AI-powered syllabus analysis.</p>
+                <a href="register.html" class="btn btn-light btn-lg me-3">
+                    <i class="fas fa-rocket"></i> Get Started
+                </a>
+                <button class="btn btn-outline-light btn-lg" id="learnMoreBtn">Learn More</button>
+            </div>
+        </section>
 
-    <section class="section-padding">
-      <div class="container">
-        <h2 class="text-center mb-5 text-gradient">How It Works</h2>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <div class="card text-center p-4">
-              <div class="feature-icon">
-                <i class="bi bi-cloud-upload"></i>
-              </div>
-              <h4>Upload Syllabus</h4>
-              <p class="text-muted">
-                Simply upload your course syllabus PDF and let AI do the magic
-              </p>
+        <!-- Custom Carousel -->
+        <section class="container my-5">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <div class="custom-carousel">
+                <div class="carousel-slides" id="carouselSlides">
+                    <div class="carousel-slide">
+                        <div>
+                            <i class="fas fa-upload fa-4x mb-3"></i>
+                            <h3>Step 1: Upload Your Syllabus</h3>
+                            <p>Simply drag and drop your course syllabus PDF</p>
+                        </div>
+                    </div>
+                    <div class="carousel-slide" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div>
+                            <i class="fas fa-brain fa-4x mb-3"></i>
+                            <h3>Step 2: AI Analysis</h3>
+                            <p>Our AI extracts topics, deadlines, and materials</p>
+                        </div>
+                    </div>
+                    <div class="carousel-slide" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div>
+                            <i class="fas fa-calendar-check fa-4x mb-3"></i>
+                            <h3>Step 3: Organize & Plan</h3>
+                            <p>Get a structured study plan tailored to your needs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn" id="carouselPrev">‹</button>
+                    <button class="carousel-btn" id="carouselNext">›</button>
+                </div>
+                <div class="carousel-indicators" id="carouselIndicators"></div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card text-center p-4">
-              <div class="feature-icon">
-                <i class="bi bi-cpu"></i>
-              </div>
-              <h4>AI Analysis</h4>
-              <p class="text-muted">
-                Advanced AI extracts topics, deadlines, and materials
-                automatically
-              </p>
+        </section>
+
+        <!-- Features -->
+        <section class="container my-5">
+            <h2 class="text-center mb-5">Features</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-center p-4">
+                        <i class="fas fa-file-upload feature-icon"></i>
+                        <h4>Easy Upload</h4>
+                        <p>Upload PDF syllabi with drag-and-drop functionality</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center p-4">
+                        <i class="fas fa-tasks feature-icon"></i>
+                        <h4>Smart Organization</h4>
+                        <p>Automatically organize topics, materials, and deadlines</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center p-4">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <h4>Progress Tracking</h4>
+                        <p>Monitor your learning progress and adjust difficulty</p>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card text-center p-4">
-              <div class="feature-icon">
-                <i class="bi bi-calendar-check"></i>
-              </div>
-              <h4>Organize & Excel</h4>
-              <p class="text-muted">
-                Get organized study plans with deadlines and difficulty levels
-              </p>
-            </div>
-          </div>
+        </section>
+    </div>
+
+    <!-- Custom Modal -->
+    <div class="custom-modal-overlay" id="customModal">
+        <div class="custom-modal">
+            <span class="custom-modal-close" id="modalClose">&times;</span>
+            <h3 id="modalTitle">Modal Title</h3>
+            <p id="modalContent">Modal content goes here.</p>
+            <button class="btn btn-primary mt-3" id="modalAction">OK</button>
         </div>
-      </div>
-    </section>
+    </div>
 
-    <section class="section-padding bg-light">
-      <div class="container text-center">
-        <h2 class="mb-4">Ready to Get Organized?</h2>
-        <p class="lead mb-4">
-          Join thousands of students managing their coursework smarter
-        </p>
-        <a href="register.html" class="btn btn-primary btn-lg">Start Now</a>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <div id="footer-container"></div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Custom JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
-  </body>
+    <script>
+        $(document).ready(function() {
+            loadComponent('navbar-container', 'components/navbar.html');
+            
+            $('#learnMoreBtn').click(function() {
+                showModal('About Syllabus AI', 'Syllabus AI helps students and educators organize course materials efficiently using artificial intelligence. Upload your syllabus and let our system extract topics, deadlines, and materials automatically!');
+            });
+        });
+    </script>
+</body>
 </html>

@@ -1,129 +1,233 @@
-// ==========================================
-// Admin Panel Functionality with Mock Support
-// ==========================================
-$(document).ready(function () {
-  if (!requireAdmin()) return;
+// Admin functionality
+class AdminPage {
+    constructor() {
+        // Check admin access immediately
+        if (!this.checkAdminAccess()) {
+            return;
+        }
+        this.initializeEventListeners();
+    }
 
-  loadAdminStats();
-});
+    checkAdminAccess() {
+        const user = AuthManager.getCurrentUser();
+        if (!AuthManager.isAdmin()) {
+            showModal('Access Denied', 'You must be an administrator to access this page.', 'OK', () => {
+                window.location.href = 'dashboard.html';
+            });
+            return false;
+        }
+        return true;
+    }
 
-function loadAdminStats() {
-  if (MOCK_MODE) {
-    // Use mock data for admin stats
-    setTimeout(() => {
-      $("#uploadCount").text("42");
-      $("#usersCount").text("156");
-      $("#errorsCount").text("3");
-      loadActivityLog();
-    }, 800);
-  } else {
-    // Load upload count
-    AdminAPI.getStats("uploads")
-      .done(function (data) {
-        $("#uploadCount").text(data.count || 0);
-      })
-      .fail(function () {
-        $("#uploadCount").text("N/A");
-      });
+    initializeEventListeners() {
+        $(document).ready(() => {
+            if (!this.checkAdminAccess()) return;
+            
+            this.bindEvents();
+            this.loadAdminData();
+            this.startSystemMonitoring();
+        });
+    }
 
-    // Load users count
-    AdminAPI.getStats("users")
-      .done(function (data) {
-        $("#usersCount").text(data.count || 0);
-      })
-      .fail(function () {
-        $("#usersCount").text("N/A");
-      });
+    bindEvents() {
+        // User management actions (delegated)
+        $(document).on('click', '.view-user-btn', (e) => {
+            this.viewUserDetails(e);
+        });
 
-    // Load errors count
-    AdminAPI.getStats("errors")
-      .done(function (data) {
-        $("#errorsCount").text(data.count || 0);
-      })
-      .fail(function () {
-        $("#errorsCount").text("N/A");
-      });
+        $(document).on('click', '.suspend-user-btn', (e) => {
+            this.suspendUser(e);
+        });
+    }
 
-    // Load activity log
-    loadActivityLog();
-  }
-}
+    async loadAdminData() {
+        try {
+            const stats = await api.getAdminStats();
+            this.updateStats(stats);
+            this.loadUsersTable();
+            this.loadRecentActivity();
+            
+        } catch (error) {
+            console.error('Error loading admin data:', error);
+            this.loadFallbackData();
+        }
+    }
 
-function loadActivityLog() {
-  const container = $("#activityLog");
-  container.html('<div class="spinner"></div>');
+    updateStats(stats) {
+        this.animateCounter('#uploadCount', stats.totalUploads || 0);
+        this.animateCounter('#usersCount', stats.totalUsers || 0);
+        this.animateCounter('#errorsCount', stats.systemErrors || 0);
+        this.animateCounter('#activeCount', stats.activeUsers || 0);
+    }
 
-  if (MOCK_MODE) {
-    // Use mock activity data
-    const mockActivity = [
-      {
-        action: "User Registration",
-        user: "newuser@student.edu",
-        timestamp: new Date(Date.now() - 300000),
-      },
-      {
-        action: "Syllabus Upload",
-        user: "demo@student.edu",
-        timestamp: new Date(Date.now() - 600000),
-      },
-      {
-        action: "System Login",
-        user: "admin@edu.edu",
-        timestamp: new Date(Date.now() - 900000),
-      },
-      {
-        action: "Profile Update",
-        user: "john@student.edu",
-        timestamp: new Date(Date.now() - 1200000),
-      },
-      {
-        action: "Syllabus Analysis",
-        user: "demo@student.edu",
-        timestamp: new Date(Date.now() - 1500000),
-      },
-    ];
+    loadUsersTable() {
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
+        const container = $('#usersTable');
+        
+        if (users.length === 0) {
+            container.html('<tr><td colspan="6" class="text-center text-muted">No users found</td></tr>');
+            return;
+        }
 
-    setTimeout(() => {
-      renderActivityLog(mockActivity, container);
-    }, 800);
-  } else {
-    // Use real API
-    AdminAPI.getActivity()
-      .done(function (data) {
-        renderActivityLog(data, container);
-      })
-      .fail(function () {
-        container.html(
-          '<div class="alert alert-danger">Failed to load activity log.</div>'
-        );
-      });
-  }
-}
+        const usersHTML = users.map(user => {
+            const userUploads = uploads.filter(upload => upload.userId === user.id);
+            const status = user.isActive !== false ? 'Active' : 'Suspended';
+            const statusClass = user.isActive !== false ? 'success' : 'secondary';
+            
+            return `
+                <tr>
+                    <td>${user.id.substring(0, 8)}...</td>
+                    <td>${user.email}</td>
+                    <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td>${userUploads.length}</td>
+                    <td><span class="badge bg-${statusClass}">${status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary view-user-btn" data-user-id="${user.id}">View</button>
+                        <button class="btn btn-sm btn-outline-danger suspend-user-btn" data-user-id="${user.id}">
+                            ${user.isActive !== false ? 'Suspend' : 'Activate'}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
 
-function renderActivityLog(data, container) {
-  container.empty();
+        container.html(usersHTML);
+    }
 
-  if (!data || data.length === 0) {
-    container.html('<div class="alert alert-info">No recent activity.</div>');
-    return;
-  }
+    loadRecentActivity() {
+        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
+        const container = $('#adminActivityLog');
+        
+        // Clear existing items
+        container.empty();
 
-  data.forEach((activity) => {
-    const item = $(`
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <strong>${activity.action}</strong>
-                        <small class="text-muted d-block">${
-                          activity.user || "Unknown user"
-                        }</small>
+        // Add real activities from uploads
+        uploads.slice(-5).reverse().forEach(upload => {
+            const date = new Date(upload.uploadedAt);
+            const timeAgo = this.getTimeAgo(date);
+            
+            container.prepend(`
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong><i class="fas fa-upload me-2 text-primary"></i>Syllabus uploaded</strong>
+                        <span class="text-muted">${timeAgo}</span>
                     </div>
-                    <small class="text-muted">${new Date(
-                      activity.timestamp
-                    ).toLocaleString()}</small>
+                    <small>File: ${upload.fileName}</small>
                 </div>
-            </div>
-        `);
-    container.append(item);
-  });
+            `);
+        });
+
+        if (uploads.length === 0) {
+            container.append('<p class="text-center text-muted">No recent activity</p>');
+        }
+    }
+
+    loadFallbackData() {
+        // Fallback to localStorage data
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
+        
+        this.animateCounter('#uploadCount', uploads.length);
+        this.animateCounter('#usersCount', users.length);
+        this.animateCounter('#errorsCount', Math.floor(Math.random() * 5));
+        this.animateCounter('#activeCount', Math.floor(users.length * 0.7));
+        
+        this.loadUsersTable();
+        this.loadRecentActivity();
+    }
+
+    getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minutes ago`;
+        if (diffHours < 24) return `${diffHours} hours ago`;
+        if (diffDays === 1) return 'Yesterday';
+        return `${diffDays} days ago`;
+    }
+
+    animateCounter(selector, target) {
+        let current = 0;
+        const increment = Math.ceil(target / 30);
+        const interval = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(interval);
+            }
+            $(selector).text(current);
+        }, 50);
+    }
+
+    viewUserDetails(e) {
+        const userId = $(e.target).data('user-id');
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const user = users.find(u => u.id === userId);
+        
+        if (user) {
+            showModal('User Details', 
+                `Email: ${user.email}<br>
+                 Role: ${user.role}<br>
+                 Registered: ${new Date(user.createdAt).toLocaleDateString()}<br>
+                 Status: ${user.isActive !== false ? 'Active' : 'Suspended'}`,
+                'Close'
+            );
+        }
+    }
+
+    suspendUser(e) {
+        const userId = $(e.target).data('user-id');
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const userIndex = users.findIndex(u => u.id === userId);
+        
+        if (userIndex !== -1) {
+            const user = users[userIndex];
+            const newStatus = user.isActive !== false ? false : true;
+            
+            users[userIndex].isActive = newStatus;
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            showModal('User Updated', 
+                `User ${user.email} has been ${newStatus ? 'activated' : 'suspended'}.`,
+                'OK',
+                () => {
+                    this.loadUsersTable();
+                }
+            );
+        }
+    }
+
+    startSystemMonitoring() {
+        // Simulate system metrics updates
+        setInterval(() => {
+            this.updateSystemMetrics();
+        }, 10000);
+    }
+
+    updateSystemMetrics() {
+        // Randomly update system metrics for demo
+        const metrics = [
+            { selector: '.progress-bar.bg-success', min: 85, max: 98 },
+            { selector: '.progress-bar.bg-info', min: 75, max: 92 },
+            { selector: '.progress-bar.bg-warning', min: 65, max: 85 },
+            { selector: '.progress-bar.bg-danger', min: 55, max: 75 }
+        ];
+
+        metrics.forEach(metric => {
+            const newValue = Math.floor(Math.random() * (metric.max - metric.min + 1)) + metric.min;
+            $(metric.selector)
+                .css('width', newValue + '%')
+                .text(newValue + '%');
+        });
+    }
 }
+
+// Initialize admin page
+$(document).ready(() => {
+    window.adminPage = new AdminPage();
+});
