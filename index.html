@@ -26,38 +26,42 @@
             </div>
         </section>
 
-        <!-- Custom Carousel -->
+       <!-- Custom Carousel -->
         <section class="container my-5">
             <h2 class="text-center mb-4">How It Works</h2>
             <div class="custom-carousel">
                 <div class="carousel-slides" id="carouselSlides">
                     <div class="carousel-slide">
-                        <div>
+                        <div class="carousel-content">
                             <i class="fas fa-upload fa-4x mb-3"></i>
                             <h3>Step 1: Upload Your Syllabus</h3>
-                            <p>Simply drag and drop your course syllabus PDF</p>
+                            <p class="mb-0">Simply drag and drop your course syllabus PDF</p>
                         </div>
                     </div>
                     <div class="carousel-slide" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <div>
+                        <div class="carousel-content">
                             <i class="fas fa-brain fa-4x mb-3"></i>
                             <h3>Step 2: AI Analysis</h3>
-                            <p>Our AI extracts topics, deadlines, and materials</p>
+                            <p class="mb-0">Our AI extracts topics, deadlines, and materials</p>
                         </div>
                     </div>
                     <div class="carousel-slide" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <div>
+                        <div class="carousel-content">
                             <i class="fas fa-calendar-check fa-4x mb-3"></i>
                             <h3>Step 3: Organize & Plan</h3>
-                            <p>Get a structured study plan tailored to your needs</p>
+                            <p class="mb-0">Get a structured study plan tailored to your needs</p>
                         </div>
                     </div>
                 </div>
                 <div class="carousel-controls">
-                    <button class="carousel-btn" id="carouselPrev">‹</button>
-                    <button class="carousel-btn" id="carouselNext">›</button>
+                    <button class="carousel-btn" id="carouselPrev" aria-label="Previous slide">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn" id="carouselNext" aria-label="Next slide">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                <div class="carousel-indicators" id="carouselIndicators"></div>
+                <div class="carousel-indicators" id="carouselIndicators" aria-label="Carousel navigation"></div>
             </div>
         </section>
 
@@ -90,6 +94,9 @@
         </section>
     </div>
 
+    <!-- Footer Container -->
+    <div id="footer-container"></div>
+
     <!-- Custom Modal -->
     <div class="custom-modal-overlay" id="customModal">
         <div class="custom-modal">
@@ -103,14 +110,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
-    <script>
-        $(document).ready(function() {
-            loadComponent('navbar-container', 'components/navbar.html');
-            
-            $('#learnMoreBtn').click(function() {
-                showModal('About Syllabus AI', 'Syllabus AI helps students and educators organize course materials efficiently using artificial intelligence. Upload your syllabus and let our system extract topics, deadlines, and materials automatically!');
-            });
-        });
-    </script>
 </body>
 </html>
