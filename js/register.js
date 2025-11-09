@@ -16,7 +16,7 @@ class RegisterPage {
             this.togglePasswordVisibility(e);
         });
 
-        // Demo login buttons
+        // Demo login buttons (Note: This logic is usually for the login page, but kept for context)
         $('.demo-login').click((e) => {
             this.fillDemoCredentials(e);
         });
@@ -29,6 +29,10 @@ class RegisterPage {
         // Real-time password validation
         $('#regConfirmPassword').on('input', () => {
             this.validatePasswordMatch();
+        });
+        
+        $('#regPassword').on('input', () => {
+            this.validatePasswordMatch(); // Also check match when password changes
         });
     }
 
@@ -47,11 +51,9 @@ class RegisterPage {
     }
 
     fillDemoCredentials(e) {
+        // This functionality is typically on the login page but redirects to login.html
         const email = $(e.target).data('email');
         const password = $(e.target).data('password');
-        
-        $('#loginEmail').val(email);
-        $('#loginPassword').val(password);
         
         // Redirect to login page with pre-filled credentials
         window.location.href = `login.html?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
@@ -61,58 +63,77 @@ class RegisterPage {
         e.preventDefault();
         
         const form = e.target;
-        if (!form.checkValidity()) {
+        // Run form validation for all required fields
+        if (!form.checkValidity() || !this.validatePasswordMatch(true)) {
             e.stopPropagation();
             $(form).addClass('was-validated');
             return;
         }
 
-        const email = $('#regEmail').val();
+        const firstName = $('#regFirstName').val().trim();
+        const lastName = $('#regLastName').val().trim();
+        const email = $('#regEmail').val().trim();
         const password = $('#regPassword').val();
         const confirmPassword = $('#regConfirmPassword').val();
-
-        // Validate password match
+        
+        // The password match validation is also done in checkValidity but we keep it explicit
         if (password !== confirmPassword) {
+            // Set custom validity for final check before API call (though validatePasswordMatch handles real-time)
             $('#regConfirmPassword')[0].setCustomValidity('Passwords do not match');
             $(form).addClass('was-validated');
             return;
         }
-        $('#regConfirmPassword')[0].setCustomValidity('');
+        $('#regConfirmPassword')[0].setCustomValidity(''); // Clear if it matched
+
+        // Combine names for simplicity, assuming API needs a single 'name'
+        const fullName = `${firstName} ${lastName}`;
 
         // Show loading state
         this.setLoadingState(true);
 
         try {
-            const result = await AuthManager.register(email, password);
+            const result = await AuthManager.register(email, password, fullName, firstName, lastName);
             
             if (result.success) {
-                showModal('Success!', `Welcome to Syllabus AI, ${result.user.name}! Your account has been created successfully.`, 'Get Started', () => {
+                showModal('Success! 🎉', `Welcome to Syllabus AI, ${result.user.name || firstName}! Your account has been created successfully.`, 'Get Started', () => {
                     window.location.href = 'upload.html';
                 });
             } else {
+                // Assuming showModal is a global function defined in main.js
                 showModal('Registration Failed', result.error);
             }
         } catch (error) {
+            console.error("Registration API error:", error);
             showModal('Registration Failed', 'An error occurred during registration. Please try again.');
         } finally {
             this.setLoadingState(false);
         }
     }
 
-    validatePasswordMatch() {
+    validatePasswordMatch(isFormSubmission = false) {
         const password = $('#regPassword').val();
         const confirmPassword = $('#regConfirmPassword').val();
+        const confirmPasswordInput = $('#regConfirmPassword')[0];
         
         if (confirmPassword && password !== confirmPassword) {
-            $('#regConfirmPassword').addClass('is-invalid');
+            confirmPasswordInput.setCustomValidity('Passwords must match.');
+            if (isFormSubmission) {
+                 $('#regConfirmPassword').addClass('is-invalid');
+            }
+            return false;
         } else {
+            confirmPasswordInput.setCustomValidity('');
             $('#regConfirmPassword').removeClass('is-invalid');
+            return true;
         }
     }
 
     setLoadingState(isLoading) {
         $('#registerBtn').prop('disabled', isLoading);
         $('#registerSpinner').toggleClass('d-none', !isLoading);
+        $('#registerBtn').contents().filter(function() {
+            return this.nodeType === 3; // Text nodes
+        }).get(0).nodeValue = isLoading ? 'Registering...' : 'Create Account';
     }
 }
 
