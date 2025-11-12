@@ -1,4 +1,4 @@
-// Profile functionality
+// profile.js - COMPLETE with backend connection
 class ProfilePage {
     constructor() {
         this.initializeEventListeners();
@@ -29,17 +29,11 @@ class ProfilePage {
 
     loadProfileData() {
         const user = AuthManager.getCurrentUser();
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const currentUser = users.find(u => u.email === user.email);
         
         // Set user information
         $('#profileEmail').val(user.email);
         $('#userRole').val(user.role || 'User');
-        
-        if (currentUser) {
-            const memberSince = new Date(currentUser.createdAt).toLocaleDateString();
-            $('#memberSince').val(memberSince);
-        }
+        $('#memberSince').val(new Date().toLocaleDateString()); // You might want to get this from backend
 
         // Load statistics
         this.loadStatistics();
@@ -48,20 +42,29 @@ class ProfilePage {
         this.loadPreferences();
     }
 
-    loadStatistics() {
-        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
-        const user = AuthManager.getCurrentUser();
-        const userUploads = uploads.filter(upload => upload.userId === user.id);
-        
-        let totalTopics = 0;
-        userUploads.forEach(upload => {
-            totalTopics += upload.analysis?.extractedData?.topics?.length || 0;
-        });
+    async loadStatistics() {
+        try {
+            const syllabi = await api.getUserSyllabi();
+            
+            let totalTopics = 0;
+            syllabi.forEach(syllabus => {
+                if (syllabus.analysis?.extractedData?.topics) {
+                    totalTopics += syllabus.analysis.extractedData.topics.length;
+                }
+            });
 
-        $('#profileUploadCount').text(userUploads.length);
-        $('#profileTopicCount').text(totalTopics);
-        $('#profileCompletedCount').text(Math.floor(totalTopics * 0.3)); // Mock data
-        $('#profileStudyHours').text(Math.floor(totalTopics * 2)); // Mock data
+            $('#profileUploadCount').text(syllabi.length);
+            $('#profileTopicCount').text(totalTopics);
+            $('#profileCompletedCount').text(Math.floor(totalTopics * 0.3)); // Mock completed count
+            $('#profileStudyHours').text(Math.floor(totalTopics * 2)); // Mock study hours
+        } catch (error) {
+            console.error('Error loading statistics:', error);
+            // Fallback values
+            $('#profileUploadCount').text('0');
+            $('#profileTopicCount').text('0');
+            $('#profileCompletedCount').text('0');
+            $('#profileStudyHours').text('0');
+        }
     }
 
     loadPreferences() {

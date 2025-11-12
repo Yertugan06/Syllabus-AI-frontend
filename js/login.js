@@ -1,4 +1,4 @@
-// SIMPLE LOGIN PAGE
+// login.js - COMPLETE with backend connection
 class LoginPage {
     constructor() {
         this.init();
@@ -50,7 +50,7 @@ class LoginPage {
             this.handleLogin();
         });
 
-        // Form submission - FIXED: Use direct binding
+        // Form submission
         $('#loginForm').on('submit', (e) => {
             e.preventDefault();
             console.log('Login form submitted directly');
@@ -89,8 +89,13 @@ class LoginPage {
             
             if (result.success) {
                 console.log('Login successful, redirecting...');
-                showModal('Success!', `Welcome back, ${result.user.name}!`, 'Continue', () => {
-                    window.location.href = 'dashboard.html';
+                showModal('Success!', `Welcome back, ${result.user.firstName}!`, 'Continue', () => {
+                    // Redirect based on role
+                    if (result.user.role === 'ADMIN') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                 });
             } else {
                 console.log('Login failed:', result.error);

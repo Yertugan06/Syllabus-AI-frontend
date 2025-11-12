@@ -1,310 +1,256 @@
-// API Service for backend communication
 class ApiService {
-    constructor(baseUrl) {
-        this.baseUrl = baseUrl;
-        this.isDemoMode = true; // Force demo mode for client-side only
+  constructor(baseUrl = "http://localhost:8080/api") {
+    this.baseUrl = baseUrl;
+    console.log("ApiService initialized with baseUrl:", baseUrl);
+  }
+
+  async request(endpoint, options = {}) {
+    const url = `${this.baseUrl}${endpoint}`;
+    console.log("=== API REQUEST ===");
+    console.log("URL:", url);
+    console.log("Method:", options.method || "GET");
+    
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+      ...options,
+    };
+
+    
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+      console.log("Token added to request");
+    } else {
+      console.log("No token found");
     }
 
-    async request(endpoint, options = {}) {
-        // Always use mock responses for demo mode
-        return this.mockRequest(endpoint, options);
+    try {
+      console.log("Sending request...");
+      const response = await fetch(url, config);
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Array.from(response.headers.entries()));
+
+      // Handle unauthorized (redirect to login)
+      if (response.status === 401) {
+        console.error("Unauthorized - clearing auth and redirecting");
+        localStorage.removeItem("token");
+        localStorage.removeItem("currentUser");
+        window.location.href = "login.html";
+        throw new Error("Authentication required");
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Request failed:", response.status, errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      // For empty responses
+      const contentType = response.headers.get("content-type");
+      console.log("Response content-type:", contentType);
+      
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log("Response data:", data);
+        return data;
+      } else {
+        console.log("Empty or non-JSON response");
+        return { success: true };
+      }
+    } catch (error) {
+      console.error("API request failed:", error);
+      throw error;
+    }
+  }
+
+  // Authentication endpoints
+  async login(email, password) {
+    console.log("=== LOGIN REQUEST ===");
+    return this.request("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  }
+
+  async register(userData) {
+    console.log("=== REGISTER REQUEST ===");
+    return this.request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async getCurrentUser() {
+    console.log("=== GET CURRENT USER ===");
+    return this.request("/auth/me");
+  }
+
+  // Syllabus endpoints
+  async uploadSyllabus(formData) {
+    console.log("=== UPLOAD SYLLABUS ===");
+    const url = `${this.baseUrl}/syllabus/upload`;
+    const token = localStorage.getItem("token");
+
+    console.log("Upload URL:", url);
+    console.log("FormData entries:");
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
     }
 
-    // Mock responses for demo mode
-    async mockRequest(endpoint, options) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: formData,
+    });
 
-        // Mock endpoints
-        const mockEndpoints = {
-            '/api/auth/login': () => this.mockLogin(options.body),
-            '/api/auth/register': () => this.mockRegister(options.body),
-            '/api/auth/me': () => this.mockGetCurrentUser(),
-            '/api/syllabus/upload': () => this.mockUploadSyllabus(options.body),
-            '/api/user/syllabi': () => this.mockGetUserSyllabi(),
-            '/api/admin/stats': () => this.mockGetAdminStats(),
-            '/api/admin/activity': () => this.mockGetAdminActivity()
-        };
+    console.log("Upload response status:", response.status);
 
-        const handler = mockEndpoints[endpoint];
-        if (handler) {
-            return handler();
-        }
-
-        throw new Error(`Mock endpoint not found: ${endpoint}`);
+    if (response.status === 401) {
+      console.error("Unauthorized upload");
+      localStorage.removeItem("token");
+      localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+      throw new Error("Authentication required");
     }
 
-    // Mock authentication methods - FIXED VERSION
-    mockLogin(body) {
-        try {
-            const { email, password } = typeof body === 'string' ? JSON.parse(body) : body;
-            const users = this.getUsers();
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                const token = this.generateToken();
-                this.saveToken(token, user);
-                
-                return {
-                    success: true,
-                    token,
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        name: user.name,
-                        role: user.role
-                    }
-                };
-            } else {
-                throw new Error('Invalid email or password');
-            }
-        } catch (error) {
-            throw new Error('Invalid login request');
-        }
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Upload failed:", errorText);
+      throw new Error(`Upload failed: ${response.status} - ${errorText}`);
     }
 
-    mockRegister(body) {
-        try {
-            const { email, password } = typeof body === 'string' ? JSON.parse(body) : body;
-            const users = this.getUsers();
-            
-            if (users.find(u => u.email === email)) {
-                throw new Error('Email already registered');
-            }
+    const result = await response.json();
+    console.log("Upload successful:", result);
+    return result;
+  }
 
-            const newUser = {
-                id: 'user_' + Math.random().toString(36).substr(2, 9),
-                email,
-                password,
-                name: email.split('@')[0],
-                role: 'user',
-                createdAt: new Date().toISOString(),
-                isActive: true
-            };
-            
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            const token = this.generateToken();
-            this.saveToken(token, newUser);
+  async getUserSyllabi() {
+    console.log("=== GET USER SYLLABI ===");
+    const result = await this.request("/syllabus/user");
+    console.log("User syllabi:", result);
+    return result;
+  }
 
-            return {
-                success: true,
-                token,
-                user: {
-                    id: newUser.id,
-                    email: newUser.email,
-                    name: newUser.name,
-                    role: newUser.role
-                }
-            };
-        } catch (error) {
-            throw new Error('Invalid registration request');
-        }
-    }
+  async getSyllabus(id) {
+    console.log("=== GET SYLLABUS ===", id);
+    return this.request(`/syllabus/${id}`);
+  }
 
-    mockGetCurrentUser() {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('currentUser');
-        
-        if (!token || !userData) {
-            throw new Error('Not authenticated');
-        }
+  async getSyllabusTopics(syllabusId) {
+    console.log("=== GET SYLLABUS TOPICS ===", syllabusId);
+    const result = await this.request(`/syllabus/${syllabusId}/topics`);
+    console.log("Topics result:", result);
+    return result;
+  }
 
-        return {
-            success: true,
-            user: JSON.parse(userData)
-        };
-    }
+  async getSyllabusMaterials(syllabusId) {
+    console.log("=== GET SYLLABUS MATERIALS ===", syllabusId);
+    const result = await this.request(`/syllabus/${syllabusId}/materials`);
+    console.log("Materials result:", result);
+    return result;
+  }
 
-    // Mock data management
-    getUsers() {
-        return JSON.parse(localStorage.getItem('users') || '[]');
-    }
+  async getSyllabusDeadlines(syllabusId) {
+    console.log("=== GET SYLLABUS DEADLINES ===", syllabusId);
+    const result = await this.request(`/syllabus/${syllabusId}/deadlines`);
+    console.log("Deadlines result:", result);
+    return result;
+  }
 
-    generateToken() {
-        return 'demo_token_' + Math.random().toString(36).substr(2, 16);
-    }
+  async deleteSyllabus(id) {
+    console.log("=== DELETE SYLLABUS ===", id);
+    return this.request(`/syllabus/${id}`, {
+      method: "DELETE",
+    });
+  }
 
-    saveToken(token, user) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('currentUser', JSON.stringify({
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role
-        }));
-    }
+  // User profile
+  async getUserProfile() {
+    console.log("=== GET USER PROFILE ===");
+    return this.request("/user/profile");
+  }
 
-    // Mock syllabus methods
-    mockUploadSyllabus(formData) {
-        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
-        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        
-        const newUpload = {
-            id: 'upload_' + Math.random().toString(36).substr(2, 9),
-            fileName: 'syllabus.pdf',
-            userId: user.id,
-            uploadedAt: new Date().toISOString(),
-            status: 'completed',
-            analysis: {
-                topics: Math.floor(Math.random() * 10) + 5,
-                materials: Math.floor(Math.random() * 5) + 3,
-                deadlines: Math.floor(Math.random() * 4) + 2,
-                extractedData: this.generateMockSyllabusData()
-            }
-        };
-        
-        uploads.push(newUpload);
-        localStorage.setItem('uploads', JSON.stringify(uploads));
+  async updateUserPreferences(preferences) {
+    console.log("=== UPDATE USER PREFERENCES ===");
+    return this.request("/user/preferences", {
+      method: "PUT",
+      body: JSON.stringify(preferences),
+    });
+  }
 
-        return {
-            success: true,
-            upload: newUpload
-        };
-    }
-
-    mockGetUserSyllabi() {
-        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
-        
-        return uploads.filter(upload => upload.userId === user.id);
-    }
-
-    generateMockSyllabusData() {
-        const courses = [
+  // Mock data for fallback
+  getMockSyllabusData() {
+    console.log("Using mock syllabus data");
+    return {
+      id: 1,
+      fileName: "sample_syllabus.pdf",
+      uploadDate: new Date().toISOString(),
+      analysis: {
+        extractedData: {
+          topics: [
             {
-                title: 'Introduction to Computer Science',
-                code: 'CS101',
-                instructor: 'Dr. Smith',
-                semester: 'Fall 2024'
+              id: 1,
+              title: "Introduction to Course",
+              description: "Course overview and objectives",
+              week: 1,
+              difficultyLevel: "EASY"
             },
             {
-                title: 'Web Development Fundamentals',
-                code: 'WD101',
-                instructor: 'Prof. Johnson',
-                semester: 'Spring 2024'
+              id: 2,
+              title: "Basic Concepts",
+              description: "Fundamental principles and theories",
+              week: 2,
+              difficultyLevel: "MEDIUM"
             },
             {
-                title: 'Data Structures and Algorithms',
-                code: 'CS201',
-                instructor: 'Dr. Williams',
-                semester: 'Fall 2024'
+              id: 3,
+              title: "Advanced Topics",
+              description: "Complex theories and applications",
+              week: 3,
+              difficultyLevel: "HARD"
             }
-        ];
-
-        const randomCourse = courses[Math.floor(Math.random() * courses.length)];
-
-        return {
-            course: randomCourse,
-            topics: [
-                { id: 1, title: 'Programming Fundamentals', difficulty: 'easy', description: 'Basic programming concepts and syntax' },
-                { id: 2, title: 'Data Structures', difficulty: 'medium', description: 'Arrays, lists, and basic data organization' },
-                { id: 3, title: 'Algorithms', difficulty: 'hard', description: 'Sorting, searching, and algorithm analysis' },
-                { id: 4, title: 'Object-Oriented Programming', difficulty: 'medium', description: 'Classes, objects, and inheritance' },
-                { id: 5, title: 'Database Concepts', difficulty: 'medium', description: 'SQL, normalization, and database design' }
-            ],
-            materials: [
-                { id: 1, title: 'Textbook Chapter 1', type: 'PDF', size: '2.1 MB' },
-                { id: 2, title: 'Programming Exercises', type: 'Code', size: '150 KB' },
-                { id: 3, title: 'Lecture Slides Week 1', type: 'PDF', size: '3.5 MB' },
-                { id: 4, title: 'Reference Documentation', type: 'Link', url: 'https://developer.mozilla.org' }
-            ],
-            deadlines: [
-                { id: 1, title: 'Assignment 1', date: this.getFutureDate(7), type: 'Assignment' },
-                { id: 2, title: 'Midterm Exam', date: this.getFutureDate(21), type: 'Exam' },
-                { id: 3, title: 'Final Project', date: this.getFutureDate(45), type: 'Project' },
-                { id: 4, title: 'Quiz 1', date: this.getFutureDate(3), type: 'Quiz' }
-            ]
-        };
-    }
-
-    getFutureDate(daysFromNow) {
-        const date = new Date();
-        date.setDate(date.getDate() + daysFromNow);
-        return date.toISOString().split('T')[0];
-    }
-
-    // Mock admin methods
-    mockGetAdminStats() {
-        const users = this.getUsers();
-        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
-        
-        return {
-            totalUsers: users.length,
-            totalUploads: uploads.length,
-            activeUsers: users.filter(u => u.isActive).length,
-            systemErrors: Math.floor(Math.random() * 5),
-            storageUsed: (uploads.length * 2.5).toFixed(1) + ' MB'
-        };
-    }
-
-    mockGetAdminActivity() {
-        const uploads = JSON.parse(localStorage.getItem('uploads') || '[]');
-        const users = this.getUsers();
-        
-        return uploads.slice(-10).reverse().map(upload => {
-            const user = users.find(u => u.id === upload.userId);
-            return {
-                id: upload.id,
-                action: 'upload',
-                description: `Syllabus uploaded by ${user?.email || 'Unknown'}`,
-                timestamp: upload.uploadedAt,
-                fileName: upload.fileName
-            };
-        });
-    }
-
-    // Authentication endpoints
-    async login(email, password) {
-        return this.request('/api/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password })
-        });
-    }
-
-    async register(email, password) {
-        return this.request('/api/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({ email, password })
-        });
-    }
-
-    async getCurrentUser() {
-        return this.request('/api/auth/me');
-    }
-
-    // Syllabus endpoints
-    async uploadSyllabus(formData) {
-        return this.request('/api/syllabus/upload', {
-            method: 'POST',
-            body: formData
-        });
-    }
-
-    async getUserSyllabi() {
-        return this.request('/api/user/syllabi');
-    }
-
-    // Topic management
-    async updateTopicDifficulty(topicId, difficulty) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log(`Updated topic ${topicId} difficulty to ${difficulty}`);
-                resolve({ success: true });
-            }, 500);
-        });
-    }
-
-    // Admin endpoints
-    async getAdminStats() {
-        return this.request('/api/admin/stats');
-    }
-
-    async getAdminActivity() {
-        return this.request('/api/admin/activity');
-    }
+          ],
+          materials: [
+            {
+              id: 1,
+              title: "Textbook Chapter 1",
+              type: "READING",
+              url: "#"
+            },
+            {
+              id: 2,
+              title: "Video Lecture",
+              type: "VIDEO",
+              url: "#"
+            }
+          ],
+          deadlines: [
+            {
+              id: 1,
+              title: "Assignment 1",
+              dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              type: "ASSIGNMENT",
+              description: "First homework assignment"
+            },
+            {
+              id: 2,
+              title: "Midterm Exam",
+              dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              type: "EXAM",
+              description: "Midterm examination"
+            }
+          ]
+        }
+      }
+    };
+  }
 }
 
 // Create global API instance
-const api = new ApiService('http://localhost:8080');
+const api = new ApiService("http://localhost:8080/api");
+console.log("Global API instance created");
